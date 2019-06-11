@@ -23,8 +23,8 @@ before_install:
   - export BUILD_ARGS="--build-arg PROTOBUF_VERSION=$PROTOBUF_VERSION --build-arg P4C_COMMIT=$P4C_COMMIT --build-arg MAKEFLAGS=$MAKEFLAGS"
 
 install:
-  - docker pull $DOCKER_BUILDER_IMAGE
-  - docker pull $DOCKER_RUNTIME_IMAGE
+  - docker pull $DOCKER_BUILDER_IMAGE || true
+  - docker pull $DOCKER_RUNTIME_IMAGE || true
 
 script:
   # Build images. Without eval, build args are not escaped properly.
