@@ -1,15 +1,16 @@
+ARG P4C_COMMIT=master
+ARG PROTOBUF_VERSION=3.2.0
+ARG MAKEFLAGS=-j2
+
 # 2 stage-build. A first alpine image is used to build protobuf and p4c.
 # Finally, the given p4c binaries are copied to a new image with the required
 # libraries.
 
 FROM bitnami/minideb:stretch as builder
 
-ARG P4C_COMMIT=7781b08
-# Binaries to copy in the final image
-ARG TARGETS="p4c-bm2-ss p4c-graphs"
-ARG PROTOBUF_VERSION=3.2.0
-
-ARG MAKEFLAGS=-j3
+ARG P4C_COMMIT
+ARG PROTOBUF_VERSION
+ARG MAKEFLAGS
 
 # Build and install protobuf...
 RUN install_packages \
@@ -63,12 +64,23 @@ RUN make VERBOSE=1
 # RUN make check
 RUN make install
 
+# Runtime stage
+FROM bitnami/minideb:stretch AS runtime
 
-### Release stage
-FROM bitnami/minideb:stretch AS release
+LABEL maintainer="Carmelo Cascone <carmelo@opennetworking.org>"
+LABEL description="Minimal distribution of the P4 compiler with BMv2 simple_switch backend (p4c-bm2-ss)"
+
+ARG P4C_COMMIT
+ARG PROTOBUF_VERSION
+
+LABEL protobuf-version="$PROTOBUF_VERSION"
+LABEL p4c-commit="$P4C_COMMIT"
+
 # cpp is used by p4c to pre-process P4 sources. graphviz is optional but it's
 # nice to have to convert the output of p4c-graphs to pdfs.
-ENV RUNTIME_DEPS cpp graphviz \
+ENV RUNTIME_DEPS \
+    cpp \
+    graphviz \
     libboost-graph1.62.0 \
     libboost-iostreams1.62.0 \
     libgc1c2 \
@@ -82,4 +94,3 @@ COPY --from=builder /usr/lib/libprotobuf.so.12 /usr/lib/
 COPY --from=builder /usr/share/p4c/p4include /usr/share/p4c/p4include
 
 WORKDIR /
-ENTRYPOINT  []
