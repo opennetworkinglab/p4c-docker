@@ -11,29 +11,29 @@ with the ONOS SDN controller, but you can use it without ONOS.
 
 To obtain the image:
 
-    docker pull ccasconeonf/p4c:<tag>
+    docker pull opennetworking/p4c:<tag>
 
 ## Tags
 
 The image comes in two tags:
 
-* `ccasconeonf/p4c:latest` Updated daily and built from the master branch of
+* `opennetworking/p4c:latest` Updated daily and built from the master branch of
   the [p4lang/p4c][p4c] repository;
-* `ccasconeonf/p4c:stable` Built using an arbitrary selected p4c commit that
+* `opennetworking/p4c:stable` Built using an arbitrary selected p4c commit that
   produces outputs known to work well with the ONOS development and testing
   environment.
 
-## Status [![Build Status](https://travis-ci.org/ccascone/p4c-docker.svg?branch=master)](Travis)
+## Status [![Build Status](https://travis-ci.org/opennetworkinglab/p4c-docker.svg?branch=master)](Travis)
 
 Images are built daily using [Travis CI][Travis] and pushed to 
 [Docker Hub][Docker Hub].
 
-[![](https://images.microbadger.com/badges/version/ccasconeonf/p4c:latest.svg)](https://microbadger.com/images/ccasconeonf/p4c:latest)
-[![](https://images.microbadger.com/badges/image/ccasconeonf/p4c:latest.svg)](https://microbadger.com/images/ccasconeonf/p4c:latest)
+[![](https://images.microbadger.com/badges/version/opennetworking/p4c:latest.svg)](https://microbadger.com/images/opennetworking/p4c:latest)
+[![](https://images.microbadger.com/badges/image/opennetworking/p4c:latest.svg)](https://microbadger.com/images/opennetworking/p4c:latest)
 
-[![](https://images.microbadger.com/badges/version/ccasconeonf/p4c:stable.svg)](https://microbadger.com/images/ccasconeonf/p4c:stable)
-[![](https://images.microbadger.com/badges/image/ccasconeonf/p4c:stable.svg)](https://microbadger.com/images/ccasconeonf/p4c:stable)
+[![](https://images.microbadger.com/badges/version/opennetworking/p4c:stable.svg)](https://microbadger.com/images/opennetworking/p4c:stable)
+[![](https://images.microbadger.com/badges/image/opennetworking/p4c:stable.svg)](https://microbadger.com/images/opennetworking/p4c:stable)
 
-[Travis]: https://travis-ci.org/ccascone/p4c-docker
-[Docker Hub]: https://hub.docker.com/r/ccasconeonf/p4c
+[Travis]: https://travis-ci.org/opennetworkinglab/p4c-docker
+[Docker Hub]: https://hub.docker.com/r/opennetworking/p4c
 [p4c]: https://github.com/p4lang/p4c
