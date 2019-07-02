@@ -19,7 +19,7 @@ The image comes in two tags:
 
 * `opennetworking/p4c:latest` Updated daily and built from the master branch of
   the [p4lang/p4c][p4c] repository;
-* `opennetworking/p4c:stable` Built using an arbitrary selected p4c commit that
+* `opennetworking/p4c:stable` Built using an arbitrarily selected p4c commit that
   produces outputs known to work well with the ONOS development and testing
   environment.
 
