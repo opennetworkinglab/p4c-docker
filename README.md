@@ -23,7 +23,7 @@ The image comes in two tags:
   produces outputs known to work well with the ONOS development and testing
   environment.
 
-## Status [![Build Status](https://travis-ci.org/opennetworkinglab/p4c-docker.svg?branch=master)](Travis)
+## Status [![Build Status](https://travis-ci.org/opennetworkinglab/p4c-docker.svg?branch=master)][Travis]
 
 Images are built daily using [Travis CI][Travis] and pushed to 
 [Docker Hub][Docker Hub].
