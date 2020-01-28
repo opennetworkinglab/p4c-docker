@@ -1,5 +1,5 @@
-ARG P4C_COMMIT=master
-ARG PROTOBUF_VERSION=3.2.0
+ARG P4C_COMMIT
+ARG PROTOBUF_VERSION
 ARG MAKEFLAGS=-j2
 
 # 2 stage-build. A first alpine image is used to build protobuf and p4c.
@@ -50,7 +50,7 @@ ENV BUILD_DEPS \
     libgmp-dev \
     pkg-config \
     tcpdump \
-    python
+    python3
 RUN install_packages $BUILD_DEPS
 RUN git clone https://github.com/p4lang/p4c.git /tmp/p4c && cd /tmp/p4c && \
     git checkout $P4C_COMMIT && git submodule update --init --recursive
@@ -90,7 +90,8 @@ RUN install_packages $RUNTIME_DEPS
 
 COPY --from=builder /usr/bin/p4c-bm2-ss /bin/
 COPY --from=builder /usr/bin/p4c-graphs /bin/
-COPY --from=builder /usr/lib/libprotobuf.so.12 /usr/lib/
+COPY --from=builder /usr/lib/libprotobuf.so.*.0.0 /usr/lib/
 COPY --from=builder /usr/share/p4c/p4include /usr/share/p4c/p4include
+RUN ldconfig
 
 WORKDIR /

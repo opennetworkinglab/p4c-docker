@@ -5,15 +5,16 @@ services:
 
 env:
   global:
-    - PROTOBUF_VERSION: 3.2.0
     - STABLE_P4C_COMMIT: e2934ab
     - LATEST_P4C_COMMIT: "`wget -qO- http://api.github.com/repos/p4lang/p4c/commits/master | grep -m1 '\"sha\"' | cut -d '\"' -f4 | cut -c1-7`"
     - MAKEFLAGS: "'-j2'"
   matrix:
     - TAGNAME: latest
       P4C_COMMIT: $LATEST_P4C_COMMIT
+      PROTOBUF_VERSION: 3.6.1
     - TAGNAME: stable
       P4C_COMMIT: $STABLE_P4C_COMMIT
+      PROTOBUF_VERSION: 3.2.0
 
 before_install:
   - export LOCAL_RUNTIME_IMAGE=p4c-$TAGNAME
