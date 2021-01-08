@@ -22,6 +22,8 @@ The image comes in two tags:
 * `opennetworking/p4c:stable` Built using an arbitrarily selected p4c commit that
   produces outputs known to work well with the ONOS development and testing
   environment.
+* `opennetworking/p4c:stable-20210108` Built using a p4c commit from 2021-01-08 that
+  supports `@p4runtime_translation` annotations.
 
 ## Status [![Build Status](https://travis-ci.org/opennetworkinglab/p4c-docker.svg?branch=master)][Travis]
 
@@ -33,6 +35,9 @@ Images are built daily using [Travis CI][Travis] and pushed to
 
 [![](https://images.microbadger.com/badges/version/opennetworking/p4c:stable.svg)](https://microbadger.com/images/opennetworking/p4c:stable)
 [![](https://images.microbadger.com/badges/image/opennetworking/p4c:stable.svg)](https://microbadger.com/images/opennetworking/p4c:stable)
+
+[![](https://images.microbadger.com/badges/version/opennetworking/p4c:stable-20210108.svg)](https://microbadger.com/images/opennetworking/p4c:stable-20210108)
+[![](https://images.microbadger.com/badges/image/opennetworking/p4c:stable-20210108.svg)](https://microbadger.com/images/opennetworking/p4c:stable-20210108)
 
 [Travis]: https://travis-ci.org/opennetworkinglab/p4c-docker
 [Docker Hub]: https://hub.docker.com/r/opennetworking/p4c
