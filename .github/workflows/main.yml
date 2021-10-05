@@ -1,0 +1,107 @@
+# This is a basic workflow that is triggered periodically, building docker images for P4C
+
+name: CI-Docker-P4C
+
+on: [push, pull_request]
+  # schedule:
+  #   - cron:  '0 0 * * 1' # start weekly at 00:00, every Monday
+
+jobs:
+      
+  solve_env:
+    runs-on: ubuntu-20.04
+    steps:
+      - id: solving_envs
+        name: Solving envs
+        run: |
+          echo "::set-output name=LATEST_P4C_COMMIT::${{ env.LATEST_P4C_COMMIT }}"
+          echo "::set-output name=MAKEFLAGS::${{ env.MAKEFLAGS }}"
+          echo "::set-output name=STABLE_20210108_P4C_COMMIT::${{ env.STABLE_20210108_P4C_COMMIT }}"
+          echo "::set-output name=STABLE_P4C_COMMIT::${{ env.STABLE_P4C_COMMIT }}"
+          echo "::set-output name=DOCKER_REPO::${{ env.DOCKER_REPO }}"
+        env:
+          STABLE_P4C_COMMIT: e2934ab32ace8a877bf2b34704950a4da69b6202
+          STABLE_20210108_P4C_COMMIT: 41b6968f8da2f611c69a0677e849c4e221152d04
+          LATEST_P4C_COMMIT: "`wget -qO- http://api.github.com/repos/p4lang/p4c/commits/main | grep -m1 '\"sha\"' | cut -c11-19`"
+          MAKEFLAGS: '-j2'
+          DOCKER_REPO: "opennetworking/p4c"
+    outputs:
+      STABLE_P4C_COMMIT: ${{ steps.solving_envs.outputs.STABLE_P4C_COMMIT }}
+      STABLE_20210108_P4C_COMMIT: ${{ steps.solving_envs.outputs.STABLE_20210108_P4C_COMMIT }}
+      LATEST_P4C_COMMIT: ${{ steps.solving_envs.outputs.LATEST_P4C_COMMIT }}
+      MAKEFLAGS: ${{ steps.solving_envs.outputs.MAKEFLAGS }}
+      DOCKER_REPO: ${{ steps.solving_envs.outputs.DOCKER_REPO }}
+        
+        
+  build_matrix:
+    needs: solve_env
+    runs-on: ubuntu-20.04 
+    strategy:
+      matrix:
+          include:
+          - TAGNAME: latest
+            P4C_COMMIT: ${{ needs.solve_env.outputs.LATEST_P4C_COMMIT }}
+            PROTOBUF_VERSION: 3.6.1
+          - TAGNAME: stable
+            P4C_COMMIT: ${{ needs.solve_env.outputs.STABLE_P4C_COMMIT }}
+            PROTOBUF_VERSION: 3.2.0
+          - TAGNAME: stable-20210108
+            P4C_COMMIT: ${{ needs.solve_env.outputs.STABLE_20210108_P4C_COMMIT }}
+            PROTOBUF_VERSION: 3.6.1
+            
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v2
+        
+      - name: Before Install
+        shell: bash
+        id: before_install
+        run: |
+          echo "::set-output name=LOCAL_RUNTIME_IMAGE::p4c-${{ matrix.TAGNAME }}"
+          echo "::set-output name=DOCKER_RUNTIME_IMAGE::${{ needs.solve_env.outputs.DOCKER_REPO }}:${{ matrix.TAGNAME }}"
+          echo '::set-output name=BUILD_ARGS::--build-arg PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }} --build-arg P4C_COMMIT=${{ matrix.P4C_COMMIT }} --build-arg MAKEFLAGS=${{ needs.solve_env.outputs.MAKEFLAGS }}'
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: "${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }}" #user/app:latest
+          build-args: "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}, P4C_COMMIT=${{ matrix.P4C_COMMIT }}, MAKEFLAGS=${{ needs.solve_env.outputs.MAKEFLAGS }}"
+          target: "runtime"
+
+#       - name: Docker Pull Image
+#         id: docker_pull
+#         run: docker pull ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
+        
+#       - name: Run scripts
+#         id: run_scripts
+#         run: |
+#             # Build images. Without eval, build args are not escaped properly.
+#             eval "docker build --target runtime --cache-from ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }} -t ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} ${{ steps.before_install.outputs.BUILD_ARGS }} . "
+            
+#       - name: Test docker build
+#         run: |
+#           # Test that all shared objects are present.
+#           docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-bm2-ss --help
+#           docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-graphs --help
+
+#       - name: Change file permissions
+#         run: chmod +x docker_push
+        
+#       - name: Run docker_push
+#         run: ./docker_push "$DOCKER_PASSWORD" "$DOCKER_USERNAME" "$DOCKER_RUNTIME_IMAGE" "$LOCAL_RUNTIME_IMAGE"
+#         env:
+#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#           DOCKER_RUNTIME_IMAGE: ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
+#           LOCAL_RUNTIME_IMAGE : ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
