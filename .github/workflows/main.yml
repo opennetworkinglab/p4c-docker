@@ -1,6 +1,6 @@
 # This is a basic workflow that is triggered periodically, building docker images for P4C
 
-name: CI Docker P4C
+name: CI-Docker-P4C
 
 on:
   schedule:
