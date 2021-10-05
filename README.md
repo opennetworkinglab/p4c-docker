@@ -26,8 +26,9 @@ The image comes in two tags:
   supports `@p4runtime_translation` annotations.
 
 ## Status [![Build Status](https://travis-ci.org/opennetworkinglab/p4c-docker.svg?branch=master)][Travis]
+## Status [![Build Status](https://github.com/opennetworking/p4c-docker/actions/workflows/main.yml/badge.svg)][Github Actions]
 
-Images are built daily using [Travis CI][Travis] and pushed to 
+Images are built daily using [Github Actions] and pushed to 
 [Docker Hub][Docker Hub].
 
 [![](https://images.microbadger.com/badges/version/opennetworking/p4c:latest.svg)](https://microbadger.com/images/opennetworking/p4c:latest)
@@ -42,3 +43,4 @@ Images are built daily using [Travis CI][Travis] and pushed to
 [Travis]: https://travis-ci.org/opennetworkinglab/p4c-docker
 [Docker Hub]: https://hub.docker.com/r/opennetworking/p4c
 [p4c]: https://github.com/p4lang/p4c
+[Github Actions]: https://docs.github.com/en/actions
