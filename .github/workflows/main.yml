@@ -60,9 +60,6 @@ jobs:
           echo "::set-output name=LOCAL_RUNTIME_IMAGE::p4c-${{ matrix.TAGNAME }}"
           echo "::set-output name=DOCKER_RUNTIME_IMAGE::${{ needs.solve_env.outputs.DOCKER_REPO }}:${{ matrix.TAGNAME }}"
           echo '::set-output name=BUILD_ARGS::--build-arg PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }} --build-arg P4C_COMMIT=${{ matrix.P4C_COMMIT }} --build-arg MAKEFLAGS=${{ needs.solve_env.outputs.MAKEFLAGS }}'
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
         
       - name: Login to DockerHub
         uses: docker/login-action@v1 
