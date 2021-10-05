@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - id: solving_envs
-        name: Solving envs
+        name: Solving env variables
         run: |
           echo "::set-output name=LATEST_P4C_COMMIT::${{ env.LATEST_P4C_COMMIT }}"
           echo "::set-output name=MAKEFLAGS::${{ env.MAKEFLAGS }}"
