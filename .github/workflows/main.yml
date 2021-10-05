@@ -5,7 +5,7 @@ name: CI-Docker-P4C
 on: 
   push:
     branches:
-      - porting
+      - master #Debug
   schedule:
     - cron:  '0 0 * * 1' # start weekly at 00:00, every Monday
 
