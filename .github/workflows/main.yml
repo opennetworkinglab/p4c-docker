@@ -73,7 +73,10 @@ jobs:
           push: false
           cache-from: "${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}"
           tags: "${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }}"
-          build-args: "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}, P4C_COMMIT=${{ matrix.P4C_COMMIT }}, MAKEFLAGS=${{ needs.solve_env.outputs.MAKEFLAGS }}"
+          build-args: |
+            "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}"
+            "P4C_COMMIT=${{ matrix.P4C_COMMIT }}"
+            "MAKEFLAGS=${{ needs.solve_env.outputs.MAKEFLAGS }}"
           target: "runtime"
 
 #       - name: Docker Pull Image
