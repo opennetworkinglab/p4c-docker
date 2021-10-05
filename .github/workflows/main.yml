@@ -2,7 +2,10 @@
 
 name: CI-Docker-P4C
 
-on:
+on: 
+  push:
+    branches:
+      - porting
   schedule:
     - cron:  '0 0 * * 1' # start weekly at 00:00, every Monday
 
@@ -61,29 +64,47 @@ jobs:
           echo "::set-output name=DOCKER_RUNTIME_IMAGE::${{ needs.solve_env.outputs.DOCKER_REPO }}:${{ matrix.TAGNAME }}"
           echo '::set-output name=BUILD_ARGS::--build-arg PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }} --build-arg P4C_COMMIT=${{ matrix.P4C_COMMIT }} --build-arg MAKEFLAGS=${{ needs.solve_env.outputs.MAKEFLAGS }}'
       
-      - name: Docker Pull Image
-        id: docker_pull
-        run: docker pull ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
         
-      - name: Run scripts
-        id: run_scripts
-        run: |
-            # Build images. Without eval, build args are not escaped properly.
-            eval "docker build --target runtime --cache-from ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }} -t ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} ${{ steps.before_install.outputs.BUILD_ARGS }} . "
-            
-      - name: Test docker build
-        run: |
-          # Test that all shared objects are present.
-          docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-bm2-ss --help
-          docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-graphs --help
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: "${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }}" #user/app:latest
+          build-args: "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}, P4C_COMMIT=${{ matrix.P4C_COMMIT }}, MAKEFLAGS=${{ needs.solve_env.outputs.MAKEFLAGS }}"
+          target: "runtime"
 
-      - name: Change file permissions
-        run: chmod +x docker_push
+#       - name: Docker Pull Image
+#         id: docker_pull
+#         run: docker pull ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
         
-      - name: Run docker_push
-        run: ./docker_push "$DOCKER_PASSWORD" "$DOCKER_USERNAME" "$DOCKER_RUNTIME_IMAGE" "$LOCAL_RUNTIME_IMAGE"
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_RUNTIME_IMAGE: ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
-          LOCAL_RUNTIME_IMAGE : ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
+#       - name: Run scripts
+#         id: run_scripts
+#         run: |
+#             # Build images. Without eval, build args are not escaped properly.
+#             eval "docker build --target runtime --cache-from ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }} -t ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} ${{ steps.before_install.outputs.BUILD_ARGS }} . "
+            
+#       - name: Test docker build
+#         run: |
+#           # Test that all shared objects are present.
+#           docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-bm2-ss --help
+#           docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-graphs --help
+
+#       - name: Change file permissions
+#         run: chmod +x docker_push
+        
+#       - name: Run docker_push
+#         run: ./docker_push "$DOCKER_PASSWORD" "$DOCKER_USERNAME" "$DOCKER_RUNTIME_IMAGE" "$LOCAL_RUNTIME_IMAGE"
+#         env:
+#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#           DOCKER_RUNTIME_IMAGE: ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
+#           LOCAL_RUNTIME_IMAGE : ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
