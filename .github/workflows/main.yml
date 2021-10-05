@@ -1,13 +1,9 @@
-# This is a basic workflow that is manually triggered
+# This is a basic workflow that is triggered periodically, building docker images for P4C
 
-name: Manual workflow
+name: CI Docker P4C
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on: [push, pull_request]
 
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
       
   solve_env:
@@ -76,28 +72,6 @@ jobs:
             docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-bm2-ss --help
             docker run --rm ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} p4c-graphs --help
             
-#       - name: Docker Push
-#         id: docker_push
-#         env:
-#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#           MY_REPO: '${{ secrets.DOCKER_USERNAME }}/temp'
-#         run: |
-#           echo '$DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin'
-#           docker tag ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }} ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
-#           docker push ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
-
-#       - uses: mr-smithers-excellent/docker-build-push@v5
-#         name: Build & push Docker image
-#         with:
-#           image: repo/image
-#           tags: ${{ steps.before_install.outputs.LOCAL_RUNTIME_IMAGE }}, ${{ steps.before_install.outputs.DOCKER_RUNTIME_IMAGE }}
-#           registry: docker.io # DockerHub
-#           buildArgs: ${{ steps.before_install.outputs.BUILD_ARGS }}
-#           target: 'runtime'
-#           username: ${{ secrets.DOCKER_USERNAME }}
-#           password: ${{ secrets.DOCKER_PASSWORD }}
-          
       - name: Change permissions
         run: chmod +x docker_push
         
