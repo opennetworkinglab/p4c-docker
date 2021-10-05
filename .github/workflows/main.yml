@@ -4,7 +4,7 @@ name: Build-P4C-Image
 
 on: 
   schedule:
-    - cron:  '0 0 * * 1' # start weekly at 00:00, every Monday
+    - cron:  '0 0 * * *' # start daily at 00:00
 
 jobs:
       
