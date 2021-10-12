@@ -12,15 +12,13 @@ jobs:
     steps:
     - name: Find latest P4C commit
       id: eval
-      run: echo "::set-output name=commit::${{ env.p4c_commit }}"
-    env:
-      p4c_commit: "`wget -qO- http://api.github.com/repos/p4lang/p4c/commits/main | grep -m1 '\"sha\"' | cut -c11-19`"
+      run: echo "::set-output name=COMMIT::`wget -qO- http://api.github.com/repos/p4lang/p4c/commits/main | grep -m1 '\"sha\"' | cut -c11-19`"
     outputs:
-      LATEST_P4C_COMMIT: ${{ steps.eval.outputs.commit }}
+      LATEST_P4C_COMMIT: ${{ steps.eval.outputs.COMMIT }}
 
   build_matrix:
     needs: solve_env
-    runs-on: ubuntu-20.04 
+    runs-on: ubuntu-20.04
     env:
       MAKEFLAGS: '-j2'
       DOCKER_REPO: "opennetworking/p4c"
@@ -40,13 +38,13 @@ jobs:
             P4C_COMMIT: 41b6968f8
             PROTOBUF_VERSION: 3.6.1
             MAKEFLAGS: $MAKEFLAGS
-            
-    steps:        
+
+    steps:
       - name: Checkout this repository
         uses: actions/checkout@v2
-       
+
       - name: Login to DockerHub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -55,7 +53,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          load: true
+          push: false
+          load: true # load the builded image to local docker instance. Needed for testing step.
+          cache-from: "p4c-${{ matrix.TAGNAME }}"
           build-args: |
             "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}"
             "P4C_COMMIT=${{ matrix.P4C_COMMIT }}"
@@ -67,12 +67,12 @@ jobs:
         run: |
           docker run --rm p4c-${{ matrix.TAGNAME }} p4c-bm2-ss --help
           docker run --rm p4c-${{ matrix.TAGNAME }} p4c-graphs --help
-          
+
       - name: Push to registry
         uses: docker/build-push-action@v2
         with:
+          context: .
           push: true
-          cache-from: "p4c-${{ matrix.TAGNAME }}"
           tags: "${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }}" # Docker runtime image
           build-args: |
             "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}"
