@@ -60,20 +60,20 @@ jobs:
             "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}"
             "P4C_COMMIT=${{ matrix.P4C_COMMIT }}"
             "MAKEFLAGS=${{ matrix.MAKEFLAGS }}"
-          tags: p4c-${{ matrix.TAGNAME }} # Local Runtime image
+          tags: "${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }}" # Local Runtime image
           target: "runtime"
 
       - name: Test docker build
         run: |
-          docker run --rm p4c-${{ matrix.TAGNAME }} p4c-bm2-ss --help
-          docker run --rm p4c-${{ matrix.TAGNAME }} p4c-graphs --help
-
+          docker run --rm ${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }} p4c-bm2-ss --help
+          docker run --rm ${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }} p4c-graphs --help
+          
       - name: Push to registry
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: "${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }}" # Docker runtime image
+          tags: "${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }}"
           build-args: |
             "PROTOBUF_VERSION=${{ matrix.PROTOBUF_VERSION }}"
             "P4C_COMMIT=${{ matrix.P4C_COMMIT }}"
