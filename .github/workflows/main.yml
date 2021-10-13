@@ -65,8 +65,8 @@ jobs:
 
       - name: Test docker build
         run: |
-          docker run --rm ${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }} p4c-bm2-ss --help
-          docker run --rm ${{ env.DOCKER_REPO }}:${{ matrix.TAGNAME }} p4c-graphs --help
+          docker run --rm ${{ env.DOCKER_REPO }}:p4c-${{ matrix.TAGNAME }} p4c-bm2-ss --help
+          docker run --rm ${{ env.DOCKER_REPO }}:p4c-${{ matrix.TAGNAME }} p4c-graphs --help
 
       - name: Push to registry
         uses: docker/build-push-action@v2
