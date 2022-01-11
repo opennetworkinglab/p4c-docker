@@ -38,6 +38,10 @@ jobs:
             P4C_COMMIT: 41b6968f8
             PROTOBUF_VERSION: 3.6.1
             MAKEFLAGS: $MAKEFLAGS
+          - TAGNAME: stable-20220112
+            P4C_COMMIT: e53e5fff61
+            PROTOBUF_VERSION: 3.6.1
+            MAKEFLAGS: $MAKEFLAGS
 
     steps:
       - name: Checkout this repository
