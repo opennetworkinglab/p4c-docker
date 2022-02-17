@@ -90,6 +90,7 @@ RUN install_packages $RUNTIME_DEPS
 
 COPY --from=builder /usr/bin/p4c-bm2-ss /bin/
 COPY --from=builder /usr/bin/p4c-graphs /bin/
+COPY --from=builder /usr/bin/p4c-dpdk /bin/
 COPY --from=builder /usr/lib/libprotobuf.so.*.0.0 /usr/lib/
 COPY --from=builder /usr/share/p4c/p4include /usr/share/p4c/p4include
 RUN ldconfig
